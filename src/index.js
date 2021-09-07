@@ -49,12 +49,25 @@ class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null)
       }],
-      isX: true
-    }
+      isX: true,
+      stepNumber: 0
+    };
+    this.scores = {
+      X: -1,
+      O: 1,
+      tie: 0
+    };
   }
 
+  // minimax(board, depth, isMaximizing) {
+  //   const history = this.state.history;
+  //   const current = history[this.state.stepNumber];
+  //   const result = calculateWinner(current.squares);
+  //   if
+  // }
+
   handleClick(i) {
-    const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if(calculateWinner(squares)!=null || squares[i]){
@@ -65,18 +78,26 @@ class Game extends React.Component {
       history:history.concat([{
         squares: squares
       }]),
-      isX: !this.state.isX
+      isX: !this.state.isX,
+      stepNumber: history.length
     });
+  }
+
+  jumpTo(step){
+    this.setState({
+      stepNumber: step,
+      isX: step % 2 === 0
+    })
   }
 
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const moves = history.map((step, move)=>{
       const desc = move ? 'Lượt '+move : 'Start';
       return (
-        <li>
+        <li key={move}>
           <button onClick={()=> this.jumpTo(move)}>
             {desc}
           </button>
